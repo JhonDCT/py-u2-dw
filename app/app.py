@@ -35,15 +35,18 @@ def download():
     ftp.connect(ftp_host, int(ftp_port))
     ftp.login(ftp_user, ftp_pass)
 
+    path = ''
+
     # Abrir el archivo descargado
     with open(file_name, 'rb') as audio_file:
         # Copiar el archivo al servidor ftp
-        ftp.storbinary('STOR ' + '/' + ftp_dir + '/' + file_name.replace('./downloads/', ''), audio_file)
+        path = '/' + ftp_dir + '/' + file_name.replace('./downloads/', '')
+        ftp.storbinary('STOR ' + path, audio_file)
 
     # Cerar la conexion a ftp 
     ftp.close()
 
-    return files
+    return path
 
 @app.route('/files')
 def files(): 

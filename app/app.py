@@ -16,6 +16,7 @@ app = Flask(__name__)
 def download():
     url = request.args.get('url', default = '', type = str)
 
+    os.mkdir('./downloads')
     # Limpiar la carpeta de descargas
     shutil.rmtree('./downloads')
 
@@ -100,7 +101,7 @@ def file():
 
     os.remove(path)
 
-    return file_encode
+    return str(file_encode)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)

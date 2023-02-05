@@ -1,6 +1,8 @@
 import os
 import shutil
 import glob
+import base64
+import os
 from flask import Flask, request
 from pytube import YouTube
 from ftplib import FTP
@@ -72,6 +74,33 @@ def files():
     ftp.close()
 
     return files
+
+@app.route('/file')
+def file():
+    path = request.args.get('path', default = '', type = str)
+
+    ftp_host = os.getenv('FTP_HOST')
+    ftp_port = os.getenv('FTP_PORT')
+    ftp_user = os.getenv('FTP_USER')
+    ftp_pass = os.getenv('FTP_PASS')
+    ftp_dir = os.getenv('FTP_DIR')
+
+    ftp = FTP()
+    ftp.connect(ftp_host, int(ftp_port))
+    ftp.login(ftp_user, ftp_pass)
+
+    ftp.cwd('files')
+
+    with open(path, 'wb') as local_file:
+        ftp.retrbinary('RETR ' + path, local_file.write)
+    
+    file = open(path, 'rb')
+    file_read = file.read()
+    file_encode = base64.encodebytes(file_read)
+
+    os.remove(path)
+
+    return file_encode
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
